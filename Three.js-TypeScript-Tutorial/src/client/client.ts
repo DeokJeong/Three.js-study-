@@ -1,9 +1,10 @@
-// 2차 Start Script 패널추가
+// 3차 GUI 패널추가
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 // 통계표 패널 출력
 import Stats from 'three/examples/jsm/libs/stats.module'
-
+// GUI 패널 추가
+import { GUI } from 'dat.gui'
 const scene = new THREE.Scene()
 
 const camera = new THREE.PerspectiveCamera(
@@ -41,6 +42,13 @@ function onWindowResize() {
 const stats = new Stats()
 document.body.appendChild(stats.dom)
 
+const gui = new GUI()
+const cubeFolder = gui.addFolder('Cube');
+cubeFolder.add(cube.rotation, "x", 0, Math.PI * 2)
+cubeFolder.add(cube.rotation, "y", 0, Math.PI * 2)
+cubeFolder.add(cube.rotation, "z", 0, Math.PI * 2)
+const cameraFolder = gui.addFolder('Camera')
+cameraFolder.add(cube.rotation, "z", 0, Math.PI * 2)
 function animate() {
     requestAnimationFrame(animate)
 
