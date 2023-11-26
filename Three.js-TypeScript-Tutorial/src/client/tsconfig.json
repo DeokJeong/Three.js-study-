@@ -4,7 +4,9 @@
   "compilerOptions": {
       "target": "ES6",
       "moduleResolution": "node",
-      "strict": true
+      "strict": true,
+      // start script 패널추가
+      // "allowSyntheticDefaultImports": true
   },
   "include": ["**/*.ts"]
 }
