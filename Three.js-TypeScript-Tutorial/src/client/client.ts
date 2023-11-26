@@ -43,7 +43,10 @@ renderer4.setSize(200, 200)
 
 // 마우스를 이용하여 도형을 돌리거나 휠로 다가갈수 있음
 new OrbitControls(camera1, renderer1.domElement)
-new OrbitControls(camera3, renderer3.domElement)
+// animation Loop
+// 해당 이미지에 변화가 생겼을때 render2()함수를 실행함 
+const controls = new OrbitControls(camera3, renderer3.domElement)
+controls.addEventListener('change',render2)
 
 // 일반 박스형
 const geometry = new THREE.BoxGeometry()
@@ -83,9 +86,14 @@ function animate() {
 
 function render() {
     renderer1.render(scene, camera1)
-    renderer2.render(scene, camera2)
     renderer3.render(scene2, camera3)
+}
+
+function render2() {
+    renderer2.render(scene, camera2)
     renderer4.render(scene2, camera4)
 }
 
 animate()
+// animation Loop
+render2()
