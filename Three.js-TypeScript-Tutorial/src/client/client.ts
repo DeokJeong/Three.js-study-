@@ -1,13 +1,9 @@
-// 3차 GUI 패널추가
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-// 통계표 패널 출력
 import Stats from 'three/examples/jsm/libs/stats.module'
-// GUI 패널 추가
 import { GUI } from 'dat.gui'
-const scene = new THREE.Scene()
 
-// 축도우미 추가
+const scene = new THREE.Scene()
 scene.add(new THREE.AxesHelper(5))
 
 const camera = new THREE.PerspectiveCamera(
@@ -16,74 +12,120 @@ const camera = new THREE.PerspectiveCamera(
     0.1,
     1000
 )
-camera.position.z = 2
+camera.position.x = 4
+camera.position.y = 4
+camera.position.z = 4
 
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
 const controls = new OrbitControls(camera, renderer.domElement)
-controls.addEventListener('change', render)
+controls.target.set(8, 0, 0)
 
-const geometry = new THREE.BoxGeometry()
-const geometry2 = new THREE.TorusKnotGeometry()
+// (색상, 밝기)
+const light1 = new THREE.PointLight(0xffffff, 400)
+// 빛의 위치?
+light1.position.set(10, 10, 10)
+scene.add(light1)
 
-const material = new THREE.MeshBasicMaterial({
-    color: 0x00ff00,
-    wireframe: true,
-})
+const light2 = new THREE.PointLight(0xffffff, 400)
+light2.position.set(-10, 10, 10)
+scene.add(light2)
+// 빨간공
+const object1 = new THREE.Mesh(
+    new THREE.SphereGeometry(),
+    new THREE.MeshPhongMaterial({ color: 0xff0000 })
+)
+object1.position.set(4, 0, 0)
+scene.add(object1)
+object1.add(new THREE.AxesHelper(5))
 
-const cube = new THREE.Mesh(geometry, material)
-cube.scale.x = 1
-cube.scale.y = 1
-cube.scale.z = 1
-
-scene.add(cube)
+const object2 = new THREE.Mesh(
+    new THREE.SphereGeometry(),
+    new THREE.MeshPhongMaterial({ color: 0x00ff00 })
+)
+// 초록공
+object2.position.set(4, 0, 0)
+object1.add(object2)
+object2.add(new THREE.AxesHelper(5))
+// 파란공
+const object3 = new THREE.Mesh(
+    new THREE.SphereGeometry(),
+    new THREE.MeshPhongMaterial({ color: 0x0000ff })
+)
+object3.position.set(4, 0, 0)
+object2.add(object3)
+object3.add(new THREE.AxesHelper(5))
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight
     camera.updateProjectionMatrix()
     renderer.setSize(window.innerWidth, window.innerHeight)
-    //render()
+    render()
 }
+
+const gui = new GUI()
+const object1Folder = gui.addFolder('Object1')
+object1Folder.add(object1.position, 'x', 0, 10, 0.01).name('X Position')
+object1Folder
+    .add(object1.rotation, 'x', 0, Math.PI * 2, 0.01)
+    .name('X Rotation')
+object1Folder.add(object1.scale, 'x', 0, 2, 0.01).name('X Scale')
+object1Folder.open()
+const object2Folder = gui.addFolder('Object2')
+object2Folder.add(object2.position, 'x', 0, 10, 0.01).name('X Position')
+object2Folder
+    .add(object2.rotation, 'x', 0, Math.PI * 2, 0.01)
+    .name('X Rotation')
+object2Folder.add(object2.scale, 'x', 0, 2, 0.01).name('X Scale')
+object2Folder.open()
+const object3Folder = gui.addFolder('Object3')
+object3Folder.add(object3.position, 'x', 0, 10, 0.01).name('X Position')
+object3Folder
+    .add(object3.rotation, 'x', 0, Math.PI * 2, 0.01)
+    .name('X Rotation')
+object3Folder.add(object3.scale, 'x', 0, 2, 0.01).name('X Scale')
+object3Folder.open()
 
 const stats = new Stats()
 document.body.appendChild(stats.dom)
 
-const gui = new GUI()
-const cubeFolder = gui.addFolder('Cube');
-const cuveRotationFolder = cubeFolder.addFolder('Rotation');
-cuveRotationFolder.add(cube.rotation, "x", 0, Math.PI * 2)
-cuveRotationFolder.add(cube.rotation, "y", 0, Math.PI * 2)
-cuveRotationFolder.add(cube.rotation, "z", 0, Math.PI * 2)
-// 열어두고싶을때 사용
-cubeFolder.open()
-cuveRotationFolder.open()
-const cuvePositionFolder = cubeFolder.addFolder('Position');
-// -10 부터 5만큼 0.1씩 움직인다 0.1을 설정안한다면 1씩 움직임
-cuvePositionFolder.add(cube.position, "x", -10, 5, 0.1)
-cuvePositionFolder.add(cube.position, "y", -10, 5, 0.1)
-cuvePositionFolder.add(cube.position, "z", -10, 5, 0.1)
-// 열어두고싶을때 사용
-cuvePositionFolder.open()
-const cuveScaleFolder = cubeFolder.addFolder('Scale');
-cuveScaleFolder.add(cube.scale, "x", 0, 5)
-cuveScaleFolder.add(cube.scale, "y", 0, 5)
-cuveScaleFolder.add(cube.scale, "z", 0, 5)
-// 보였다 안보였다하게하는 기능
-cubeFolder.add(cube, 'visible')
-// 열어두고싶을때 사용
-cuveScaleFolder.open()
+const debug = document.getElementById('debug1') as HTMLDivElement
 
 function animate() {
     requestAnimationFrame(animate)
-
-    // cube.rotation.x += 0.01
-    // cube.rotation.y += 0.01
-
+    controls.update()
     render()
-
+    const object1WorldPosition = new THREE.Vector3()
+    object1.getWorldPosition(object1WorldPosition)
+    const object2WorldPosition = new THREE.Vector3()
+    object2.getWorldPosition(object2WorldPosition)
+    const object3WorldPosition = new THREE.Vector3()
+    object3.getWorldPosition(object3WorldPosition)
+    debug.innerText =
+        'Red\n' +
+        'Local Pos X : ' +
+        object1.position.x.toFixed(2) +
+        '\n' +
+        'World Pos X : ' +
+        object1WorldPosition.x.toFixed(2) +
+        '\n' +
+        '\nGreen\n' +
+        'Local Pos X : ' +
+        object2.position.x.toFixed(2) +
+        '\n' +
+        'World Pos X : ' +
+        object2WorldPosition.x.toFixed(2) +
+        '\n' +
+        '\nBlue\n' +
+        'Local Pos X : ' +
+        object3.position.x.toFixed(2) +
+        '\n' +
+        'World Pos X : ' +
+        object3WorldPosition.x.toFixed(2) +
+        '\n'
     stats.update()
 }
 
@@ -92,4 +134,3 @@ function render() {
 }
 
 animate()
-//render()
